@@ -1,0 +1,81 @@
+# rhel6 pulp 2.11.z backup
+- name: Ensure expected variables
+  assert:
+    that:
+      - remote_bkup_dir is defined
+      - local_bkup_dir is defined
+    msg: |
+      Location of remote backup directory and local directory for backup to be copied to
+      must be specified with varibales remote_bkup_dir and local_bkup_dir
+
+- name: Install dependencies
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=latest"
+  with_items:
+    - rsync
+    - dump
+    - tar
+
+- name: Stop services
+  service: "name={{ item }} state=stopped"
+  with_items:
+    - httpd
+    - pulp_celerybeat
+    - pulp_resource_manager
+    - pulp_streamer
+    - pulp_workers
+    - qpidd
+
+- block:
+    - name: Create Backups folder
+      file: path={{ remote_bkup_dir }} state=directory
+
+    - name: Create backup files
+      file: "path={{ item.value.file }} state=touch"
+      with_dict: " {{ files_to_backup }}"
+
+    - name: Dump mongodb database
+      command: "mongodump --db pulp_database --out {{ remote_bkup_dir }}/{{ db_to_bkup.mogodb.dir }}"
+
+    - name: Dump pulp files
+      command: "dump 0f /root/bkups/{{ item.value.file }} {{ item.value.src_dir }}"
+      with_dict: "{{ files_to_backup }}"
+
+    - name: Archive filesystem backups
+      archive:
+        path: "{{ remote_bkup_dir }}/{{ item.value.file }}"
+        dest: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
+      with_dict: "{{ files_to_backup }}"
+
+    - name: Archive filesystem backups
+      archive:
+        path: "{{ remote_bkup_dir }}/{{ item.value.file }}"
+        dest: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
+      with_dict: "{{ databases_to_bkup }}"
+
+    - name: Fetch filesystem backups
+      fetch: 
+        src: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
+        dest: "{{ local_bkup_dir }}/{{ item.value.file }}.archive"
+        flat: yes
+      with_dict: "{{ files_to_backup }}"
+
+    - name: Fetch database backups
+      fetch: 
+        src: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
+        dest: "{{ local_bkup_dir }}/{{ item.value.file }}.archive"
+        flat: yes
+      with_dict: "{{ database_bkup }}"
+
+    - name: Delete temp backup folder from server
+      file: path={{ remote_bkup_dir }} state=absent
+
+- name: Start services
+  service: "name={{ item }} state=started"
+  with_items:
+    - httpd
+    - pulp_celerybeat
+    - pulp_resource_manager
+    - pulp_streamer
+    - pulp_workers
+    - qpidd
+
