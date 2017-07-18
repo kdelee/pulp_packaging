@@ -30,41 +30,41 @@
       file: path={{ remote_bkup_dir }} state=directory
 
     - name: Create backup files
-      file: "path={{ item.value.file }} state=touch"
+      file: "path={{ remote_bkup_dir }}/{{ item.value.file }} state=touch"
       with_dict: " {{ files_to_backup }}"
 
     - name: Dump mongodb database
-      command: "mongodump --db pulp_database --out {{ remote_bkup_dir }}/{{ db_to_bkup.mogodb.dir }}"
+      command: "mongodump --db pulp_database --out {{ remote_bkup_dir }}/{{ db_to_bkup.mongodb.dir }}"
 
     - name: Dump pulp files
-      command: "dump 0f /root/bkups/{{ item.value.file }} {{ item.value.src_dir }}"
+      command: "dump 0f {{ remote_bkup_dir }}/{{ item.value.file }} {{ item.value.src_dir }}"
       with_dict: "{{ files_to_backup }}"
 
-    - name: Archive filesystem backups
-      archive:
-        path: "{{ remote_bkup_dir }}/{{ item.value.file }}"
-        dest: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
-      with_dict: "{{ files_to_backup }}"
+      #   - name: Archive filesystem backups
+      #     archive:
+      #       path: "{{ remote_bkup_dir }}/{{ item.value.file }}"
+      #       dest: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
+      #     with_dict: "{{ files_to_backup }}"
 
-    - name: Archive filesystem backups
+    - name: Archive database backups
       archive:
-        path: "{{ remote_bkup_dir }}/{{ item.value.file }}"
+        path: "{{ remote_bkup_dir }}/{{ item.value.dir }}"
         dest: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
-      with_dict: "{{ databases_to_bkup }}"
+      with_dict: "{{ db_to_bkup }}"
 
     - name: Fetch filesystem backups
-      fetch: 
-        src: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
-        dest: "{{ local_bkup_dir }}/{{ item.value.file }}.archive"
+      fetch:
+        src: "{{ remote_bkup_dir }}/{{ item.value.file }}"
+        dest: "{{ local_bkup_dir }}/{{ item.value.file }}"
         flat: yes
       with_dict: "{{ files_to_backup }}"
 
     - name: Fetch database backups
-      fetch: 
+      fetch:
         src: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
         dest: "{{ local_bkup_dir }}/{{ item.value.file }}.archive"
         flat: yes
-      with_dict: "{{ database_bkup }}"
+      with_dict: "{{ db_to_bkup }}"
 
     - name: Delete temp backup folder from server
       file: path={{ remote_bkup_dir }} state=absent

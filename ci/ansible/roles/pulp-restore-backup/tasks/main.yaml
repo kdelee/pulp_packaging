@@ -13,7 +13,6 @@
   with_items:
     - dump
     - tar
-    - unzip
 
 - name: Stop services
   service: "name={{ item }} state=stopped"
@@ -28,18 +27,21 @@
 - block:
     - name: Create temporary folder to copy backups into
       file: "path={{ remote_bkup_dir }} state=directory"
-    - name: Copy backups to remote
-      copy: 
-        src: "{{ local_bkup_dir }}/{{ item.value.archive }}"
-        dest: "{{ remote_bkup_dir }}/{{ item.value.archive }}"
-        validate: no
+
+    - name: Copy filesystem backups to remote
+      copy:
+        src: "{{ local_bkup_dir }}/{{ item.value.file }}"
+        dest: "{{ remote_bkup_dir }}"
       with_dict: "{{ files_to_restore }}"
 
-    - name: Unarchive backups
+    - name: Unarchive database backups
       unarchive:
         src: "{{ local_bkup_dir }}/{{ item.value.archive }}"
-        dest: "{{ remote_bkup_dir }}/{{ item.value.file }}"
-      with_dict: "{{ files_to_restore }}"
+        dest: "{{ remote_bkup_dir }}"
+      with_dict: "{{ db_to_restore }}"
+
+    - name: Delete temp backup folder from server
+      file: path={{ remote_bkup_dir }} state=absent
 
 - name: Start services
   service: "name={{ item }} state=started"

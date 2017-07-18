@@ -1,6 +1,7 @@
 ---
 # location of backup on remote
-remote_bkup_dir: "/root/bkups"
+remote_bkup_dir: "~/bkups"
+local_bkup_dir: "~/backups"
 files_to_restore:
   etc_pulp:
     dest_dir: /etc/pulp
@@ -14,3 +15,7 @@ files_to_restore:
     dest_dir: /var/lib/pulp
     file: var_lib_pulp
     archive: var_lib_pulp.archive
+db_to_restore:
+  mongodb:
+    archive: mongodb_backup.archive
+    dir: mongodb_backup_dir
