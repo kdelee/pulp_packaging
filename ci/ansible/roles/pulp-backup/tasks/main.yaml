@@ -8,13 +8,6 @@
       Location of remote backup directory and local directory for backup to be copied to
       must be specified with varibales remote_bkup_dir and local_bkup_dir
 
-- name: Install dependencies
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state=latest"
-  with_items:
-    - rsync
-    - dump
-    - tar
-
 - name: Stop services
   service: "name={{ item }} state=stopped"
   with_items:
@@ -29,40 +22,31 @@
     - name: Create Backups folder
       file: path={{ remote_bkup_dir }} state=directory
 
-    - name: Create backup files
-      file: "path={{ remote_bkup_dir }}/{{ item.value.file }} state=touch"
-      with_dict: " {{ files_to_backup }}"
-
     - name: Dump mongodb database
       command: "mongodump --db pulp_database --out {{ remote_bkup_dir }}/{{ db_to_bkup.mongodb.dir }}"
 
-    - name: Dump pulp files
-      command: "dump 0f {{ remote_bkup_dir }}/{{ item.value.file }} {{ item.value.src_dir }}"
+    - name: Archive filesystem backups
+      command: "tar -cjf {{ remote_bkup_dir }}/{{ item.value.file }}.tar.bz2 {{ item.value.src_dir }}/"
       with_dict: "{{ files_to_backup }}"
-
-      #   - name: Archive filesystem backups
-      #     archive:
-      #       path: "{{ remote_bkup_dir }}/{{ item.value.file }}"
-      #       dest: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
-      #     with_dict: "{{ files_to_backup }}"
 
     - name: Archive database backups
       archive:
         path: "{{ remote_bkup_dir }}/{{ item.value.dir }}"
-        dest: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
+        dest: "{{ remote_bkup_dir }}/{{ item.value.file }}.bz2"
+        format: bz2
       with_dict: "{{ db_to_bkup }}"
 
     - name: Fetch filesystem backups
       fetch:
-        src: "{{ remote_bkup_dir }}/{{ item.value.file }}"
-        dest: "{{ local_bkup_dir }}/{{ item.value.file }}"
+        src: "{{ remote_bkup_dir }}/{{ item.value.file }}.tar.bz2"
+        dest: "{{ local_bkup_dir }}/{{ item.value.file }}.tar.bz2"
         flat: yes
       with_dict: "{{ files_to_backup }}"
 
     - name: Fetch database backups
       fetch:
-        src: "{{ remote_bkup_dir }}/{{ item.value.file }}.archive"
-        dest: "{{ local_bkup_dir }}/{{ item.value.file }}.archive"
+        src: "{{ remote_bkup_dir }}/{{ item.value.file }}.bz2"
+        dest: "{{ local_bkup_dir }}/{{ item.value.file }}.bz2"
         flat: yes
       with_dict: "{{ db_to_bkup }}"
 
