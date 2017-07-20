@@ -40,16 +40,16 @@
         dest: "{{ remote_bkup_dir }}"
       with_dict: "{{ db_to_restore }}"
 
-    - name: Delete temp backup folder from server
-      file: path={{ remote_bkup_dir }} state=absent
+      #- name: Delete temp backup folder from server
+      #file: path={{ remote_bkup_dir }} state=absent
 
-- name: Start services
-  service: "name={{ item }} state=started"
-  with_items:
-    - httpd
-    - pulp_celerybeat
-    - pulp_resource_manager
-    - pulp_streamer
-    - pulp_workers
-    - qpidd
+#- name: Start services
+#  service: "name={{ item }} state=started"
+#  with_items:
+#    - httpd
+#    - pulp_celerybeat
+#    - pulp_resource_manager
+#    - pulp_streamer
+#    - pulp_workers
+#    - qpidd
 
