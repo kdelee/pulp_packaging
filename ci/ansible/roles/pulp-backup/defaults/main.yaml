@@ -1,6 +1,6 @@
 ---
 # location of backup on remote
-remote_bkup_dir: "~/bkups"
+remote_bkup_dir: "/root/backups"
 local_bkup_dir/: "backups"
 files_to_backup:
   etc_pulp:

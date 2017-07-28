@@ -11,7 +11,6 @@
 - name: Install dependencies
   action: "{{ ansible_pkg_mgr }} name={{ item }} state=latest"
   with_items:
-    - dump
     - tar
 
 - name: Stop services
@@ -45,9 +44,6 @@
     - name: Drop pulp database
       command: "mongo pulp_database --eval 'db.dropDatabase()'"
 
-    - name: Run pulp-manage-db
-      command: "sudo -u apache pulp-manage-db"
-
     - name: Unarchive database backups
       unarchive:
         src: "{{ local_bkup_dir }}/{{ item.value.archive }}"
@@ -72,4 +68,3 @@
     - pulp_streamer
     - pulp_workers
     - qpidd
-
