@@ -8,6 +8,12 @@
       Location of remote backup directory and local directory for backup to be copied to
       must be specified with varibales remote_bkup_dir and local_bkup_dir
 
+- name: Install dependencies
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=latest"
+  with_items:
+    - python34
+    - python34-pip
+
 - name: Ensure services are running
   service: "name={{ item }} state=started"
   with_items:
