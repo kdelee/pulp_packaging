@@ -97,6 +97,12 @@
                 - jaudet
                 - koliveir
 
+- property:
+    name: qe-intern
+    properties:
+        - ownership:
+            owner: kdelee
+
 # Used in the "ci-workflow-runtest" defaults definition.
 - publisher:
     name: default-ci-workflow-publishers
@@ -183,6 +189,15 @@
             url: https://github.com/pulp/pulp_packaging.git
             branches:
                 - '*/master'
+            skip-tag: true
+
+- scm:
+    name: elijah-pulp-packaging-github
+    scm:
+        - git:
+            url: https://github.com/kdelee/pulp_packaging.git
+            branches:
+                - '*/backup_pulp'
             skip-tag: true
 
 - wrapper:
