@@ -1,7 +1,7 @@
 ---
 # location of backup on remote
-remote_bkup_dir: "/root/backups"
-local_bkup_dir/: "backups"
+remote_bkup_dir: "{{ ansible_user_dir }}/remote_backups"
+local_bkup_dir/: "local_backups"
 files_to_backup:
   etc_pulp:
     src_dir: /etc/pulp

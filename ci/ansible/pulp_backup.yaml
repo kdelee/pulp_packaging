@@ -9,4 +9,5 @@
       when: pulp_version | version_compare('2.8', '>=')
     - role: pulp-certs
     - role: pulp-crane
+    - role: pulp-populate
     - role: pulp-backup
