@@ -1,5 +1,6 @@
 ---
 # location of backup on remote
+fetch_to_localhost: true
 remote_bkup_dir: "{{ ansible_user_dir }}/remote_backups"
 local_bkup_dir/: "local_backups"
 files_to_backup:
