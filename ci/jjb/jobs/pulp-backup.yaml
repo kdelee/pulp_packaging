@@ -24,7 +24,7 @@
                 - 'pulp-backup.sh'
         - trigger-builds:
             - project:
-                - pulp-restore
+                - elijah-pulp-2.13-stable-restore-rhel7
               block: true
               block-thresholds:
                   build-step-failure-threshold: never
@@ -40,7 +40,7 @@
                     file-pattern: cacert.pem
                     no-files-found-action: FAIL
         - copyartifact:
-            project: pulp-restore
+            project: elijah-pulp-2.13-stable-restore-rhel7
             which-build: specific-build
             build-number: ${{TRIGGERED_BUILD_NUMBER_PULP_RESTORE}}
             flatten: false
