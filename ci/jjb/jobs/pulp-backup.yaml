@@ -1,8 +1,13 @@
 - job-template:
-    name: 'elijah-pulp-{pulp_version}-{pulp_build}-backup-{os}'
+    name: 'pulp-{pulp_version}-{pulp_build}-backup-{os}'
     node: '{os}-np'
     properties:
         - qe-intern
+        - build-discarder:
+            days-to-keep: 3
+            num-to-keep: 3
+            artifact-days-to-keep: 3
+            artifact-num-to-keep: 12
     scm:
         - elijah-pulp-packaging-github
     wrappers:
@@ -22,28 +27,6 @@
         - shell:
             !include-raw-escape:
                 - 'pulp-backup.sh'
-        - trigger-builds:
-            - project:
-                - elijah-pulp-2.13-stable-restore-rhel7
-              block: true
-              block-thresholds:
-                  build-step-failure-threshold: never
-                  unstable-threshold: never
-                  failure-threshold: never
-              parameter-factories:
-                  - factory: binaryfile
-                    parameter-name: PRIVATE_KEY
-                    file-pattern: pulp_server_key
-                    no-files-found-action: FAIL
-                  - factory: binaryfile
-                    parameter-name: CA_CERT
-                    file-pattern: cacert.pem
-                    no-files-found-action: FAIL
-        - copyartifact:
-            project: elijah-pulp-2.13-stable-restore-rhel7
-            which-build: specific-build
-            build-number: ${{TRIGGERED_BUILD_NUMBER_PULP_RESTORE}}
-            flatten: false
         - shell: |
             if [[ "${{OS}}" =~ "rhel" ]]; then
                 sudo subscription-manager unregister
@@ -51,5 +34,12 @@
             fi
         - capture-logs
     publishers:
+      - archive:
+          artifacts: '*.bz2'
+      - join-trigger:
+          # join-trigger does not fail the build if this project doesn't exist, so we
+          # do not need to ensure that there is a promote job for every release config
+          projects:
+            - 'pulp-2.13-stable-restore-rhel7'
       - email-notify-owners
       - mark-node-offline

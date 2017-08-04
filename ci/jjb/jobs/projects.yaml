@@ -72,7 +72,7 @@
     pulp_build:
         - 'stable'
     jobs:
-        - elijah-pulp-{pulp_version}-{pulp_build}-restore-{os}
+        - pulp-{pulp_version}-{pulp_build}-restore-{os}
 
 - project:
     name: pulp-backup
@@ -83,7 +83,7 @@
     pulp_version:
         - '2.11'
     jobs:
-        - elijah-pulp-{pulp_version}-{pulp_build}-backup-{os}
+        - pulp-{pulp_version}-{pulp_build}-backup-{os}
 
 - project:
     name: pulp-fixtures-publisher

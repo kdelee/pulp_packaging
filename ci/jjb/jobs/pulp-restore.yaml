@@ -1,5 +1,5 @@
 - job-template:
-    name: 'elijah-pulp-{pulp_version}-{pulp_build}-restore-{os}'
+    name: 'pulp-{pulp_version}-{pulp_build}-restore-{os}'
     node: '{os}-np'
     properties:
         - qe-intern
@@ -19,9 +19,13 @@
                 PULP_VERSION={pulp_version}
     triggers:
         - reverse:
-            jobs: 'elijah-pulp-2.11-backup-rhel6'
+            jobs: 'pulp-2.11-stable-backup-rhel6'
             result: 'success'
     builders:
+        - copyartifact:
+            project: 'pulp-2.11-stable-backup-rhel6'
+            which-build: last-successful
+            flatten: true
         - shell:
             !include-raw-escape:
                 - 'ssh-setup.sh'
