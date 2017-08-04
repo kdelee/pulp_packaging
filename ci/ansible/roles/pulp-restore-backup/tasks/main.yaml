@@ -12,6 +12,9 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state=latest"
   with_items:
     - tar
+    - python34
+    - python34-setuptools
+    - gcc
 
 - name: Stop services
   service: "name={{ item }} state=stopped"
@@ -68,3 +71,17 @@
     - pulp_streamer
     - pulp_workers
     - qpidd
+
+- block:
+
+  - name: Create config directory
+    file: path="{{ ansible_user_dir }}/.config/pulp_smash" state=directory
+
+  - name: Ensure a Pulp Smash configuration file is present
+    template:
+      src: settings.j2
+      dest: "{{ ansible_user_dir }}/.config/pulp_smash/settings.json"
+
+  - name: Populate the server
+    script: test_restore.sh
+  when: ( not skip_restore_test )

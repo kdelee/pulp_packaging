@@ -4,6 +4,7 @@
   with_items:
     - python34
     - python34-setuptools
+    - gcc
 
 - name: Ensure services are running
   service: "name={{ item }} state=started"

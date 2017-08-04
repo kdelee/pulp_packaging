@@ -15,7 +15,7 @@ pip install --upgrade pip
 git clone https://github.com/PulpQE/pulp-migrate
 cd pulp-migrate
 python setup.py install
-python -m unittest pulp_migrate.populate
+python -m unittest pulp_migrate.test_restore
 deactivate
 cd /root
 rm -rf pulp-migrate
