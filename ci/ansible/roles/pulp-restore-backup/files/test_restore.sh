@@ -4,6 +4,7 @@
 set -eo pipefail
 IFS=$'\n\t'
 
+export EXEC_DIR=${PWD}
 cd /root
 rm -rf pulp-migrate
 easy_install-3.4 pip
@@ -15,8 +16,10 @@ pip install --upgrade pip
 git clone https://github.com/PulpQE/pulp-migrate
 cd pulp-migrate
 python setup.py install
-python -m unittest pulp_migrate.test_restore
+pip install pytest
+pytest --junit-xml="${EXEC_DIR}/restore.test.report.xml"  pulp_migrate/test_restore.py
 deactivate
 cd /root
 rm -rf pulp-migrate
 rm -rf ${VENV}
+cd ${EXEC_DIR}

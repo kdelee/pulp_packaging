@@ -12,6 +12,8 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state=latest"
   with_items:
     - tar
+    - unzip
+    - gzip
     - python34
     - python34-setuptools
     - gcc
