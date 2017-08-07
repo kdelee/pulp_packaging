@@ -3,8 +3,6 @@
     node: '{os}-np'
     properties:
         - qe-intern
-        - copyartifact:
-            projects: pulp-restore
     scm:
         - elijah-pulp-packaging-github
     wrappers:

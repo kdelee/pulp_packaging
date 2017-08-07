@@ -37,8 +37,6 @@
       - archive:
           artifacts: '*.bz2'
       - join-trigger:
-          # join-trigger does not fail the build if this project doesn't exist, so we
-          # do not need to ensure that there is a promote job for every release config
           projects:
             - 'pulp-2.13-stable-restore-rhel7'
       - junit:
