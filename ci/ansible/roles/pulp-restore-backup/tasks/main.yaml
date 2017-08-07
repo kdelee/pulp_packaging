@@ -12,8 +12,6 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state=latest"
   with_items:
     - tar
-    - unzip
-    - gzip
     - python34
     - python34-setuptools
     - gcc
@@ -49,10 +47,12 @@
     - name: Drop pulp database
       command: "mongo pulp_database --eval 'db.dropDatabase()'"
 
+    # unarchive module fails probably because
+    # it relies on the using the "--diff" option which fails when
+    # unarchiving a directory full of files that don't yet exist
+    # See: https://github.com/ansible/ansible-modules-core/issues/2936#issuecomment-189579092
     - name: Unarchive database backups
-      unarchive:
-        src: "{{ local_bkup_dir }}/{{ item.value.archive }}"
-        dest: "{{ remote_bkup_dir }}"
+      command: "cd / && tar vxjf {{ remote_bkup_dir }}/{{ item.value.archive }} --overwrite"
       with_dict: "{{ db_to_restore }}"
 
     - name: Restore database from backup
@@ -61,8 +61,8 @@
     - name: Run pulp-manage-db
       command: "sudo -u apache pulp-manage-db"
 
-      #- name: Delete temp backup folder from server
-      #file: path={{ remote_bkup_dir }} state=absent
+    - name: Delete temp backup folder from server
+      file: path={{ remote_bkup_dir }} state=absent
 
 - name: Start services
   service: "name={{ item }} state=started"
