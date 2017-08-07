@@ -20,6 +20,8 @@
                 OS={os}
                 PULP_BUILD={pulp_build}
                 PULP_VERSION={pulp_version}
+    triggers:
+        - timed: '@midnight'
     builders:
         - shell:
             !include-raw-escape:
