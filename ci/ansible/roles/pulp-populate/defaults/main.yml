@@ -15,3 +15,5 @@ pulp_smash_api_verify: "false"
 
 # AMQP broker service either qpidd or rabbitmq
 pulp_smash_amqp_broker_service: "qpidd"
+
+test_results_dir: "{{ ansible_user_dir }}"

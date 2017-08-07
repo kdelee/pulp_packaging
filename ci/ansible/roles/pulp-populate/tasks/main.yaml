@@ -25,4 +25,4 @@
     dest: "{{ ansible_user_dir }}/.config/pulp_smash/settings.json"
 
 - name: Populate the server
-  script: populate.sh
+  script: populate.sh "{{ test_results_dir }}"

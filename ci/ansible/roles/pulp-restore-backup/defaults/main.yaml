@@ -41,3 +41,5 @@ pulp_smash_amqp_broker_service: "qpidd"
 # if you don't want to test the restore with pulp-migrate
 #  set to true
 skip_restore_test: false
+
+test_results_dir: "{{ ansible_user_dir }}"
