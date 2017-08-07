@@ -10,4 +10,5 @@ ansible-playbook --connection local -i hosts ci/ansible/pulp_backup.yaml \
     -e "rhn_username=${RHN_USERNAME}" \
     -e "local_bkup_dir=${PWD}/local_backups" \
     -e "remote_bkup_dir=${PWD}" \
-    -e "fetch_to_localhost=false"
+    -e "fetch_to_localhost=false" \
+    -e "test_results_dir=${PWD}"

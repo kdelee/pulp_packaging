@@ -89,7 +89,7 @@
         - capture-logs
     publishers:
         - junit:
-            results: junit-report.xml
+            results: "*.xml"
         - cobertura:
             report-file: "coverage.xml"
             targets:

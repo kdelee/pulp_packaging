@@ -41,5 +41,7 @@
           # do not need to ensure that there is a promote job for every release config
           projects:
             - 'pulp-2.13-stable-restore-rhel7'
+      - junit:
+          results: "*.xml"
       - email-notify-owners
       - mark-node-offline
