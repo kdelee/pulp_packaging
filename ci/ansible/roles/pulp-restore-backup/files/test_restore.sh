@@ -17,7 +17,11 @@ git clone https://github.com/PulpQE/pulp-migrate
 cd pulp-migrate
 python setup.py install
 pip install pytest
+set +e
+set +o pipefail
+# don't want to exit if tests fail
 pytest --junit-xml="${EXEC_DIR}/restore.test.report.xml"  pulp_migrate/test_restore.py
+set -eo pipefail
 deactivate
 cd /root
 rm -rf pulp-migrate
